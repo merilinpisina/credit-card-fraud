@@ -13,6 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 from sklearn.covariance import EllipticEnvelope
 from sklearn.ensemble import IsolationForest
+import pickle
 import test as testing
 
 input = pd.read_csv("./dataset/creditcard.csv")
@@ -28,34 +29,42 @@ positives = data[data['Class']==1]
 # Примерите са проектират в пространството по такъв начин, че да бъдат линейно разделими.
 
 # RBF Kernel (non-linear)
-svmRBF = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-svmRBF.fit(negatives)
+# svmRBF = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
+# svmRBF.fit(negatives)
 
 # Linear Kernel
-svmLinear = svm.OneClassSVM(nu=0.1, kernel="linear", gamma=0.1)
-svmLinear.fit(negatives)
+# svmLinear = svm.OneClassSVM(nu=0.1, kernel="linear", gamma=0.1)
+# svmLinear.fit(negatives)
 
 # Isolation Forest
 isolationForest = IsolationForest()
 isolationForest.fit(negatives)
 
-train_linear = svmLinear.predict(negatives)
-test_linear = svmLinear.predict(positives)
+# train_linear = svmLinear.predict(negatives)
+# test_linear = svmLinear.predict(positives)
 
-train_isolation_forest = isolationForest.predict(negatives)
-test_isolation_forest = isolationForest.predict(positives)
+# train_isolation_forest = isolationForest.predict(negatives)
+# test_isolation_forest = isolationForest.predict(positives)
 
-train_RBF = svmRBF.predict(negatives)
-test_RBF = svmRBF.predict(positives)
+# train_RBF = svmRBF.predict(negatives)
+# test_RBF = svmRBF.predict(positives)
 
-print("Training: One Class SVM (RBF) : ",(testing.train_accuracy(train_RBF)),"%")
-print("Test: One Class SVM (RBF) : ",(testing.test_accuracy(test_RBF)),"%")
+# print("Training: One Class SVM (RBF) : ",(testing.train_accuracy(train_RBF)),"%")
+# print("Test: One Class SVM (RBF) : ",(testing.test_accuracy(test_RBF)),"%")
 
-print("Training: Isolation Forest: ",(testing.train_accuracy(train_isolation_forest)),"%")
-print("Test: Isolation Forest: ",(testing.test_accuracy(test_isolation_forest)),"%")
+# print("Training: Isolation Forest: ",(testing.train_accuracy(train_isolation_forest)),"%")
+# print("Test: Isolation Forest: ",(testing.test_accuracy(test_isolation_forest)),"%")
 
-print("Training: One Class SVM (Linear) : ",(testing.train_accuracy(train_linear)),"%")
-print("Test: One Class SVM (Linear) : ",(testing.test_accuracy(test_linear)),"%")
+# print("Training: One Class SVM (Linear) : ",(testing.train_accuracy(train_linear)),"%")
+# print("Test: One Class SVM (Linear) : ",(testing.test_accuracy(test_linear)),"%")
+
+# pickle.dump(isolationForest, open("./model/isolation_forest.sav", 'wb'))
 
 # From the above analysis it could be noted that Isolation
 # Forest does the best among Anomaly detection algorithms.
+
+loaded_model = pickle.load(open("./model/isolation_forest.sav", 'rb'))
+result = loaded_model.predict(negatives)
+print(testing.train_accuracy(result))
+result = loaded_model.predict(positives)
+print(testing.test_accuracy(result))
